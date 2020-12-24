@@ -1323,10 +1323,7 @@ u8 Save_Param(u8 FileNum)             // save the operating parameters table
   }else{
     if(__OpenFileWr(SecBuff, Filename, pCluster, pDirAddr)!= OK) return DISK_ERR;
     memset(SecBuff, 0, SectorSize);
-    if(Edited){
-      Print_Str((8*11)+3, 0, 0x0405, PRN,  "Skip OpenFileWr");
-      goto SkipOpenFileWr;}
-      Print_Str((8*11)+3, 0, 0x0405, PRN,  "OpenFileWr");
+    if(Edited)goto SkipOpenFileWr;
   } 
 
 
@@ -1336,11 +1333,10 @@ u8 Save_Param(u8 FileNum)             // save the operating parameters table
   if(Edited==0){
     if(FileNum==0){     
       Filename[8] = 'W'; Filename[9] = 'P'; Filename[10] = 'T';  // create WPT files
-      }
+    }
     if(__OpenFileWr(SecBuff, Filename, pCluster, pDirAddr)!= OK) return DISK_ERR;
     memset(SecBuff, 0, 512);
     //else if((MissingFileFlag==1)&&(flash_mode==FLASH_2M))return WR_ERR;  // do not write new additional config files unless they already exist to prevent corruption (only on 2MB drives)			     	
-
   }else{
     if(__OpenFileWr(SecBuff, Filename, pCluster, pDirAddr)!= OK) return DISK_ERR;
     memset(SecBuff, 0, SectorSize);
