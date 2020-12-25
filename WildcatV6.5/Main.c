@@ -999,17 +999,19 @@ int main(void)
             Edited=0; 
             FileMessage(i);  
           }else{
-            if ((Current==FILE)&&(_Det==DIR)){
-              for(j=0;j<8;j++)LastAccessedConfig[j]=SelectedFileName[j]=Label[Title[9][3].Value][j];
-            }
-            j=Title[FILE][3].Value;                       //keep present hilighted list position
-            i=ConfigFile(LOAD);
-            if(ListOverride){                             //keep list after loading new config from it
-              Title[FILE][3].Value=j;
-              Detail[9]=3;             
-              ProcessEditName();                        //loads processed name into edit function
-            }
-            for(j=0;j<3;j++)Title[FILE][j].Flag|=UPDAT;
+            if(memcmp((u8*)Label[Title[9][3].Value],"None    ",8)!=0){  //ignore Load None Key3
+              if ((Current==FILE)&&(_Det==DIR)){
+                for(j=0;j<8;j++)LastAccessedConfig[j]=SelectedFileName[j]=Label[Title[9][3].Value][j];
+              }
+              j=Title[FILE][3].Value;                       //keep present hilighted list position
+              i=ConfigFile(LOAD);
+              if(ListOverride){                             //keep list after loading new config from it
+                Title[FILE][3].Value=j;
+                Detail[9]=3;             
+                ProcessEditName();                        //loads processed name into edit function
+              }
+              for(j=0;j<3;j++)Title[FILE][j].Flag|=UPDAT;
+            }else i=EMPT;
           } 
 
         }
@@ -1806,17 +1808,19 @@ reload:
           }
 
           if(_Curr[2].Value==CFG){
-            j=Title[FILE][3].Value;                     //keep present hilighted list position 
-            i=ConfigFile(LOAD);
-            Current=FILE;				//stay in file menu if loading file with button 5
-            if(ListOverride){                           //keep list after loading new config
-              Title[FILE][3].Value=j;
-              for(j=0;j<8;j++)LastAccessedConfig[j]=SelectedFileName[j];
-              _Det=3;
-              ProcessEditName();                        //loads processed name into edit function
-            }
-            for(j=0;j<3;j++)Title[FILE][j].Flag|=UPDAT;
-	    if(i == 0)goto bypasslongpress;
+            if(memcmp((u8*)SelectedFileName,"None    ",8)!=0){  //ignore Load None Key5
+              j=Title[FILE][3].Value;                     //keep present hilighted list position 
+              i=ConfigFile(LOAD);
+              Current=FILE;				//stay in file menu if loading file with button 5
+              if(ListOverride){                           //keep list after loading new config
+                Title[FILE][3].Value=j;
+                for(j=0;j<8;j++)LastAccessedConfig[j]=SelectedFileName[j];
+                _Det=3;
+                ProcessEditName();                        //loads processed name into edit function
+              }
+              for(j=0;j<3;j++)Title[FILE][j].Flag|=UPDAT;
+  	          if(i == 0)goto bypasslongpress;
+            }else i=EMPT; 
           }
 
           if(_Curr[2].Value==5){                        //load arbt file
