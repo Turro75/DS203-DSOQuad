@@ -1,11 +1,18 @@
 Since a while my DS203 v2.72 8MB was not able to reliably save files, only CFG were working, also filesystem get corrupted very often.
 I tried all combination of:
+
 SYS_B152 
+
 SYS_B160 
+
 SYS_B162 
+
 SYS_B164
+
 JPA Alterbios by patching all the above
+
 formatting the flash with any kind of old dos and windows devices, virtual machines
+
 v113 firmware, B251 firmware and any older release of Wildcat firmware.
 
 Nothing worked, I was close to throw away the scope thinking the flash got broken after 7 years.
