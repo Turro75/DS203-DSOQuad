@@ -1772,8 +1772,7 @@ u8 Load_Param(u8 FileNum)
 u8 Save_Param(u8 FileNum) // save the operating parameters table
 {
   char Filename[12] = "CONF    CFG";
-  u16 i, Tmp[2];
-  //u8 MissingFileFlag=1;
+  u16 i;
   u16 pCluster[3];
   u32 pDirAddr[1];
   if (InitFileSystem() != 0)
@@ -1790,26 +1789,6 @@ u8 Save_Param(u8 FileNum) // save the operating parameters table
   {
     Make_Filename(FileNum, Filename);
   }
-  Tmp[0] = *pCluster;
-
-  if ((FileNum == 0) && (__OpenFileRd(SecBuff, Filename, pCluster, pDirAddr) == OK))
-  { //make a backup of existing main setting
-    Filename[8] = 'B';
-    Filename[9] = 'A';
-    Filename[10] = 'K'; // turn into a BAK file
-    if (__OpenFileWr(SecBuff, Filename, pCluster, pDirAddr) != OK)
-      return DISK_ERR;
-    if (__ReadFileSec(SecBuff, Tmp) != OK)
-      return RD_ERR;
-    i = WriteFileSec(SecBuff, pCluster, pDirAddr);
-    if (i)
-      return i;
-    if (__CloseFile(SecBuff, SectorSize, pCluster, pDirAddr) != OK)
-      return WR_ERR; /**/
-    Filename[8] = 'W';
-    Filename[9] = 'P';
-    Filename[10] = 'T';
-  }
   if (__OpenFileWr(SecBuff, Filename, pCluster, pDirAddr) != OK)
     return DISK_ERR;
   memset(SecBuff, 0, SectorSize);
@@ -1823,107 +1802,106 @@ u8 Save_Param(u8 FileNum) // save the operating parameters table
   return OK;
 }
 
-void storeParameter(void){
+void storeParameter(void)
+{
   u16 *p = (u16 *)SecBuff;
-   u8 transfer;
-    u8 Sum = 0;
-    u16 i, j;
-    *p++ = (Current << 8) + Versions; // save the parameter table version number and the current Title
+  u8 transfer;
+  u8 Sum = 0;
+  u16 i, j;
+  *p++ = (Current << 8) + Versions; // save the parameter table version number and the current Title
 
-    for (i = 0; i < 7; i++)
-    {
-      *p++ = (Detail[i * 2 + 1] << 8) + Detail[i * 2]; // Save the Detail
-    }
-    for (i = 0; i < 13; i++)
-    { // Save display each value of the corresponding item in the menu
-      for (j = 0; j < 4; j++)
-        *p++ = Title[i][j].Value;
-    }
-    for (i = 0; i < 9; i++)
-    {
-      *p++ = (Meter[i].Track << 8) + Meter[i].Item; // Save the measurement items and measurement object
-    }
-    for (i = 0; i < 10; i++)
-    {
-      transfer = Ka1[i]; //load into unsigned var first, prevents error with added signed CH-A value spilling over into shifted CH-B when negative
-      *p++ = (Kb1[i] << 8) + transfer;
-      *p++ = Ka2[i]; // save the current channel A gain error correction coefficient
-      *p++ = Kb2[i]; // save the current B-channel gain error correction factor
-      transfer = Ka3[i];
-      *p++ = (Kb3[i] << 8) + transfer;
-    }
-    *p++ = V_Trigg[A].Value;
-    *p++ = V_Trigg[B].Value;                   // save the current A and B channels trigger threshold
-    *p++ = (CurDefTime << 8) + FlagFrameMode;  // include Cursor defined selection
-    *p++ = (UpdateMeter << 8) + FlagMeter;     // include meter "page" along with flag
-    *p++ = (CalFlag << 8) + TrgAuto;           // include wave amplitude calibration flag
-    *p++ = (SaveShortBuffXpos << 8) + OffsetX; // include short buffer xpos
-    *p++ = (Options << 8) + OffsetY;           // include Options
-    *p++ = LoBatLevel[0];
-    *p++ = LoBatLevel[1];
-    *p++ = HiBatLevel[0];
-    *p++ = HiBatLevel[1];
-    for (i = 0; i < 10; i++)
-    { //save low batt level data
-      transfer = LKa1[i];
-      *p++ = (LKb1[i] << 8) + transfer;
-      *p++ = LKa2[i];
-      *p++ = LKb2[i];
-      transfer = LKa3[i];
-      *p++ = (LKb3[i] << 8) + transfer;
-    }
-    for (i = 0; i < 10; i++)
-    { //save high batt level data
-      transfer = HKa1[i];
-      *p++ = (HKb1[i] << 8) + transfer;
-      *p++ = HKa2[i];
-      *p++ = HKb2[i];
-      transfer = HKa3[i];
-      *p++ = (HKb3[i] << 8) + transfer;
-    }
-    *p++ = PPM_Comp;
-    *p++ = PerstFrameNumber;
-    *p++ = Raw;
-    *p++ = GenFreqShift;
-    *p++ = GenAdjustMode;
-    *p++ = (0xAB << 8) + ADCoffset; //use 0xAB as id key to insure reload picks up only saved value
-    *p++ = SweepIndex;
-    *p++ = Sweep;
-    *p++ = BurstLimit;
-    *p++ = Det;
-    *p++ = FineAdjust;
-    *p++ = DataSize;
-    *p++ = SpiMode;
-    *p++ = SpiBitOrder;
-    *p++ = SpiNumBits;
-    *p++ = SpiAdj;
-    *p++ = SubIndex;
-    *p++ = GenBaudIndex;
-    *p++ = GenUartMode;
-    *p++ = GenUartStopBits;
-    *p++ = OSBuffer;
-    *p++ = OSAvg;
-    *p++ = FastDim;
-    /*
+  for (i = 0; i < 7; i++)
+  {
+    *p++ = (Detail[i * 2 + 1] << 8) + Detail[i * 2]; // Save the Detail
+  }
+  for (i = 0; i < 13; i++)
+  { // Save display each value of the corresponding item in the menu
+    for (j = 0; j < 4; j++)
+      *p++ = Title[i][j].Value;
+  }
+  for (i = 0; i < 9; i++)
+  {
+    *p++ = (Meter[i].Track << 8) + Meter[i].Item; // Save the measurement items and measurement object
+  }
+  for (i = 0; i < 10; i++)
+  {
+    transfer = Ka1[i]; //load into unsigned var first, prevents error with added signed CH-A value spilling over into shifted CH-B when negative
+    *p++ = (Kb1[i] << 8) + transfer;
+    *p++ = Ka2[i]; // save the current channel A gain error correction coefficient
+    *p++ = Kb2[i]; // save the current B-channel gain error correction factor
+    transfer = Ka3[i];
+    *p++ = (Kb3[i] << 8) + transfer;
+  }
+  *p++ = V_Trigg[A].Value;
+  *p++ = V_Trigg[B].Value;                   // save the current A and B channels trigger threshold
+  *p++ = (CurDefTime << 8) + FlagFrameMode;  // include Cursor defined selection
+  *p++ = (UpdateMeter << 8) + FlagMeter;     // include meter "page" along with flag
+  *p++ = (CalFlag << 8) + TrgAuto;           // include wave amplitude calibration flag
+  *p++ = (SaveShortBuffXpos << 8) + OffsetX; // include short buffer xpos
+  *p++ = (Options << 8) + OffsetY;           // include Options
+  *p++ = LoBatLevel[0];
+  *p++ = LoBatLevel[1];
+  *p++ = HiBatLevel[0];
+  *p++ = HiBatLevel[1];
+  for (i = 0; i < 10; i++)
+  { //save low batt level data
+    transfer = LKa1[i];
+    *p++ = (LKb1[i] << 8) + transfer;
+    *p++ = LKa2[i];
+    *p++ = LKb2[i];
+    transfer = LKa3[i];
+    *p++ = (LKb3[i] << 8) + transfer;
+  }
+  for (i = 0; i < 10; i++)
+  { //save high batt level data
+    transfer = HKa1[i];
+    *p++ = (HKb1[i] << 8) + transfer;
+    *p++ = HKa2[i];
+    *p++ = HKb2[i];
+    transfer = HKa3[i];
+    *p++ = (HKb3[i] << 8) + transfer;
+  }
+  *p++ = PPM_Comp;
+  *p++ = PerstFrameNumber;
+  *p++ = Raw;
+  *p++ = GenFreqShift;
+  *p++ = GenAdjustMode;
+  *p++ = (0xAB << 8) + ADCoffset; //use 0xAB as id key to insure reload picks up only saved value
+  *p++ = SweepIndex;
+  *p++ = Sweep;
+  *p++ = BurstLimit;
+  *p++ = Det;
+  *p++ = FineAdjust;
+  *p++ = DataSize;
+  *p++ = SpiMode;
+  *p++ = SpiBitOrder;
+  *p++ = SpiNumBits;
+  *p++ = SpiAdj;
+  *p++ = SubIndex;
+  *p++ = GenBaudIndex;
+  *p++ = GenUartMode;
+  *p++ = GenUartStopBits;
+  *p++ = OSBuffer;
+  *p++ = OSAvg;
+  *p++ = FastDim;
+  /*
     *p++ = FreeRunEnable;
     *p++ = FPGAosFlag;
     *p++ = OS_Range;
 */
-    p++;
-    p++;
-    p++;
+  p++;
+  p++;
+  p++;
 
-    *p++ = Hbold;
-    *p++ = ChartMode;
-    *p++ = LoBeepLevel;
-    *p++ = DisableCursorDisplay;
+  *p++ = Hbold;
+  *p++ = ChartMode;
+  *p++ = LoBeepLevel;
+  *p++ = DisableCursorDisplay;
 
-    for (i = 0; i < 511; i++)
-      Sum += SecBuff[i]; // calculate the parameter table checksum
-    SecBuff[511] = (~Sum) + 1;
+  for (i = 0; i < 511; i++)
+    Sum += SecBuff[i]; // calculate the parameter table checksum
+  SecBuff[511] = (~Sum) + 1;
 }
-
-
 
 u8 OverWriteWarn(void)
 {
