@@ -23,13 +23,19 @@ Now it uses 512B on 2M and 4096B on 8M.
 Every issue disappeared, I realized it was partially working with CFG because those files were 512B (now 4096B), with other filesizes the filesystem got messed.
 
 Here https://github.com/Turro75/AlterBIOS/tree/test You can find my fork of Alterbios (not sure JPA can work on it anymore) where I put a Compiled folder with all binaries ready to flash.
+
 Installation is easy:
+
 load HEX file on DFU or
 
 load ADR+BIN on DFU or
 
 load BIN with stm32flash (following debrick instructions) 
+
 I use these commands on my linux desktop:
-	stm32flash /dev/ttyUSB0  -S 0x8044000:0x1fff -w ALTBIOS.BIN
-	stm32flash /dev/ttyUSB0  -S 0x8004000:0x7fff -w ALT_B164.BIN
-	
+
+stm32flash /dev/ttyUSB0  -S 0x8044000:0x1fff -w ALTBIOS.BIN
+
+stm32flash /dev/ttyUSB0  -S 0x8004000:0x7fff -w ALT_B164.BIN
+
+
