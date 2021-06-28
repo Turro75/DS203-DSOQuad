@@ -1,5 +1,5 @@
 Since a while my DS203 v2.72 8MB was not able to reliably save files, only CFG were working, also filesystem get corrupted very often.
-I tried all combination of:
+I tried all combinations of:
 
 SYS_B152 
 
@@ -22,13 +22,15 @@ Now it uses 512B on 2M and 4096B on 8M.
 
 Every issue disappeared, I realized it was partially working with CFG because those files were 512B (now 4096B), with other filesizes the filesystem got messed.
 
-Here https://github.com/Turro75/AlterBIOS/tree/test You can find my fork of Alterbios (not sure JPA can work on it anymore) where I put a Compiled folder with all binaries ready to flash.
+Here https://github.com/PetteriAimonen/AlterBIOS/tree/master/Compiled You can find the Compiled folder with all binaries ready to flash, I already patched all 4 SYS versions I found (1.52 , 1.60 , 1.62, 1.64), anyway the 1.64 will work on any hardware release.
 
-Installation is easy:
+Morevover since SYS+Alterbios < 32KB I did a little change to fit both SYS and Alterbios within SYS slot (ALT_F1XX.HEX) so flashing is easier and we won't cause any interference with other projects that use the memory region originally used by alterbios (0x08044000 - 0x08045FFF).  
 
-load HEX file on DFU or
+Installation of original Alterbios is easy:
 
-load ADR+BIN on DFU or
+load Altbios.HEX and Alt_B1xx.SYS files on DFU or
+
+load ADR+BIN of both on DFU or
 
 load BIN with stm32flash (following debrick instructions) 
 
@@ -38,4 +40,10 @@ stm32flash /dev/ttyUSB0  -S 0x8044000:0x1fff -w ALTBIOS.BIN
 
 stm32flash /dev/ttyUSB0  -S 0x8004000:0x7fff -w ALT_B164.BIN
 
+I suggest the flash of ALT_F164.HEX which includes alterbios.
 
+As a confirmation of the installation at boot it appears "Alterbios 0.version: OK"
+
+Uninstallation:
+
+Flash stock SYS file.
