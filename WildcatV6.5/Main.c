@@ -59,7 +59,7 @@ APP V2.51 modify Vmin and Vmax, Vpp measured BUG (Process.c)
 *******************************************************************************/
                                                  
 #define APP_VERSION       "GCCv1.7W6.5 APP(2.51+SmTech1.8+PMOS69 fixes)"
-#define APP_REVISION      "Revision(W6.5) by Wildcat            "
+#define APP_REVISION      "Revision(W6.5b) by Wildcat        "
 
 
 #define LINE2  "!PRESS    >    !#!    !?!     !]!    < O >    < O >  !"
@@ -274,7 +274,7 @@ int main(void)
 //-------------------------------------------------------------------------- ************** LOOP MAIN *****************
   while (1){
   
-//-------------------------------------------------------------------------- Gestione Entra e Uscita da Modalità X Y
+//-------------------------------------------------------------------------- Gestione Entra e Uscita da Modalitï¿½ X Y
 
     if(_Kind!=PWM)PWAdjustMode=0;
     if((ChartLogic())&&(ChartMode))OsChartFlag=1;else OsChartFlag=0;
@@ -831,7 +831,7 @@ int main(void)
       //--------------------------------------------------------------------------------------------------------------
       if(Key_Buffer== KEY2){                                                    // ===--- TASTO 2 PREMUTO ---===   
         Delay_Cnt = 3000;                                                       // Carica il temporizzatore del tasto permuto
-        while (Delay_Cnt > 2500){                                                  // Se il tempo non è arrivato a 0
+        while (Delay_Cnt > 2500){                                                  // Se il tempo non ï¿½ arrivato a 0
           if((__Get(KEY_STATUS)& KEY2_STATUS)!=0){                              // CAMBIO MODO TRIGGER
            DisableCursorTimer=1;
            if ((Title[TRIGG][SOURCE].Value != TRACK3)&&(Title[TRIGG][SOURCE].Value != TRACK4)){
@@ -898,7 +898,7 @@ int main(void)
     DisableCursorTimer=1;
     if((Current!=FILE)||(_Curr[2].Value!=CFG)){
        Delay_Cnt = 1500;                                                       // Carica il temporizzatore del tasto permuto
-       while (Delay_Cnt > 1000){                                                  //WAS >0           Se il tempo non è arrivato a 0
+       while (Delay_Cnt > 1000){                                                  //WAS >0           Se il tempo non ï¿½ arrivato a 0
           if((__Get(KEY_STATUS)& KEY3_STATUS)!=0){ 
  
           if(DownConvertMode==0){
